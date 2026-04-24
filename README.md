@@ -100,7 +100,7 @@ The model receives three primary inputs from the X-NUCLEO-IKS01A3 shield:
 ### 2. AI Model Output (METEO AI)
 The embedded model performs a classification task, assigning a probability to each possible weather state:
 
-![Inference Result](image_96761c.png)
+![Inference Result](Capture d’écran 2026-04-24 143408.png)
 
 | Weather State | Probability |
 | :--- | :--- |
