@@ -1,99 +1,101 @@
-# ETRS606 - Embedded AI (Edge AI) Labs and Project
+# ETRS606 - Embedded AI: Smart Weather Forecasting Project
 
 ## Overview
 
-This repository gathers the practical labs and project work carried out as part of the **ETRS606 - Embedded AI** module.
+This repository gathers the practical labs and project work carried out as part of the **ETRS606 - Embedded AI** module. 
 
-The main objective of this course is to design embedded systems combining **sensors, microcontrollers, connectivity, and artificial intelligence**, with a particular focus on **Edge AI deployment on STM32 platforms**.
+The main objective of this course is to design intelligent embedded systems by combining **sensors, microcontrollers, connectivity, and artificial intelligence**, with a specific focus on **Edge AI deployment on STM32 platforms**.
 
-Throughout the project, we study the main engineering trade-offs involved in deploying AI models on constrained hardware, including:
-
-- memory footprint
-- computational complexity
-- inference latency
-- model accuracy
-- energy consumption
-
----
-
-## Course Context
-
-This project explores the full workflow of an embedded AI system:
-
-- neural network design and training
-- embedded programming on STM32
-- sensor interfacing through I2C
-- network communication with Ethernet
-- cloud connectivity with ThingSpeak / MATLAB
-- comparison between **Cloud AI** and **Edge AI**
-- model deployment workflow from **TensorFlow** to **ONNX**, **MATLAB**, and **STM32**
+Throughout the project, we analyzed the engineering trade-offs required to deploy AI models on constrained hardware:
+* **Memory footprint** (Flash and RAM usage)
+* **Computational complexity** (MAC operations)
+* **Inference latency** (Real-time performance)
+* **Model accuracy** vs. Model size
+* **Energy consumption** (Essential for remote deployment)
 
 ---
 
-## Hardware Used
+## Project Workflow
 
-The project is based on the following development boards and peripherals:
-
-- **NUCLEO-N657X0**  
-  ARM Cortex-M33 microcontroller up to 160 MHz, 320 KB RAM, 512 KB Flash, with advanced hardware resources including an NPU for AI inference.
-
-- **NUCLEO-F446RE**  
-  ARM Cortex-M4 microcontroller running at 180 MHz, with 128 KB RAM and 512 KB Flash.
-
-- **X-NUCLEO-IKS01A3 Sensor Shield**  
-  MEMS sensor expansion board including environmental and motion sensors such as:
-  - temperature
-  - humidity
-  - pressure
-  - acceleration
-  - magnetic field
+This project explores the complete lifecycle of an embedded AI system:
+* **Data Science:** Neural network design and training using 10 years of historical meteorological data.
+* **Embedded Development:** Firmware programming on STM32 using HAL drivers.
+* **Sensor Interfacing:** Real-time data acquisition (Temperature, Humidity, Pressure) via I2C.
+* **Connectivity:** Initial implementation with Ethernet (LwIP) and transition to **LoRa** for low-power long-range transmission.
+* **Cloud Integration:** Data visualization on ThingSpeak / MATLAB.
+* **Deployment:** Model conversion from **TensorFlow/Keras** to **C code** using **X-CUBE-AI**.
 
 ---
 
-## Software and Tools
+## Hardware Architecture
 
-The following tools are used throughout the project:
+The project is built using the following hardware:
 
-- **Python**
-- **TensorFlow / Keras**
-- **STM32CubeIDE**
-- **STM32CubeMX**
-- **HAL drivers**
-- **FreeRTOS**
-- **LwIP**
-- **ThingSpeak**
-- **MATLAB**
-- **ONNX**
-- **X-CUBE-AI**
+* **NUCLEO-H563ZI (MB1940C):** High-performance ARM Cortex-M33 MCU (up to 160 MHz), featuring 320 KB RAM and 512 KB Flash. It includes advanced hardware resources to accelerate AI inference.
+* **NUCLEO-F446RE:** ARM Cortex-M4 MCU running at 180 MHz (128 KB RAM / 512 KB Flash).
+* **X-NUCLEO-IKS01A3 Sensor Shield:** MEMS expansion board featuring:
+    * Temperature & Humidity (HTS221)
+    * Pressure (LPS22HH)
+    * Motion sensors (Accelerometer/Gyroscope)
+
+---
+
+## Software & Tools
+
+* **AI/ML:** Python, TensorFlow, Keras, ONNX, X-CUBE-AI.
+* **IDE:** STM32CubeIDE, STM32CubeMX.
+* **Firmware:** HAL Drivers, FreeRTOS, LwIP.
+* **Analytics:** ThingSpeak, MATLAB.
+
+---
+
+## Hardware Configuration for Standalone Operation
+
+A key challenge identified during the project was the power management. By default, the Nucleo board stops program execution when disconnected from the USB port due to the ST-LINK reset management.
+
+To enable **Standalone Mode** (remote deployment on battery), the power routing must be reconfigured:
+
+### 1. Jumper Configuration
+To switch the power source from USB to an external supply, move the **JP5** jumper:
+* **Default:** Jumper on **U5V** (Powered via ST-LINK USB).
+* **Standalone:** Move the jumper to the **E5V** position.
+![Current Measurement](d1174708-f3b9-4fc4-885e-2e514817ec04.jpg)
+### 2. External Wiring
+Once the jumper is moved, the board must be powered via the Morpho headers:
+* **EXT_IN (or VIN):** Connect the positive (+) 5V terminal.
+* **GND:** Connect the ground (-) terminal.
+
+> **Technical Note:** This hardware modification ensures that the AI model stored in the **Non-Volatile Flash memory** boots automatically upon power-up, bypassing the USB dependency and preventing the ST-LINK from holding the CPU in a permanent reset state.
+
+---
+
+## Energy Consumption Analysis
+
+Energy efficiency is a core pillar of Edge AI. Since this weather station is designed for remote deployment via LoRa, we monitored the board's power draw to evaluate its autonomy.
+
+### 1. Power Measurement Setup
+To measure the real-time consumption, we used a digital multimeter in series with the external power supply. 
+* **Operating Voltage:** 5V (via EXT_IN)
+* **Measured Current:** ~130 mA during active AI inference and data processing.
+
+![Current Measurement](7655d3ac-42e7-42e2-a465-1b329a1ed923.jpg)
+
+### 2. Optimization Strategy
+In a real-world scenario, the board does not need to be active 100% of the time. To extend battery life, the project explores the following states:
+* **Active State:** The MCU collects sensor data, runs the AI inference, and transmits results.
+* **Low-Power State:** Utilizing STM32 *Stop* or *Standby* modes between measurements to reduce consumption to the micro-amp ($\mu A$) range.
+
+> **Note:** The current consumption of ~130 mA includes the ST-LINK debugger and status LEDs. In a final production prototype, separating the ST-LINK portion of the board would significantly lower this baseline.
 
 ---
 
 ## Repository Structure
 
-Recommended repository structure:
-
 ```text
 ETRS606-GRP3/
 ├── README.md
-├── TP1_MNIST/
-├── TP2_STM32_Sensors_Ethernet/
-├── TP3_Cloud_Connectivity/
-├── TP4_Cloud_vs_Edge_AI/
-└── docs/
-## Hardware Configuration for Standalone Operation
-
-During the project, we encountered a power management issue: when the board is disconnected from the USB port, the program execution stops. This is due to the default power routing and the ST-LINK reset management.
----
-To enable **Standalone Mode** (powering the board without a computer), follow these steps:
-
-### 1. Jumper Configuration
-To switch the power source from USB to an external supply, you must move the **JP5** jumper:
-* **Default:** Jumper on **U5V** (Power via ST-LINK USB).
-* **Standalone:** Move the jumper to the **E5V** position.
-![Jumper Configuration](d1174708-f3b9-4fc4-885e-2e514817ec04.jpg)
-### 2. External Wiring
-Once the jumper is moved, the board can be powered directly via the following pins on the headers:
-* **EXT_IN (or E5V):** Connect the positive terminal of your 5V power source.
-* **GND:** Connect the ground/negative terminal.
-
-> **Technical Note:** This configuration bypasses the USB power dependency and ensures that the AI model stored in the **Flash memory** starts automatically as soon as the board receives power, without needing a manual reset from the ST-LINK.
+├── TP1_MNIST/                       # Digit recognition on MCU
+├── TP2_STM32_Sensors_Ethernet/      # Basic sensor data acquisition
+├── TP3_Cloud_Connectivity/          # ThingSpeak integration
+├── TP4_Cloud_vs_Edge_AI/            # Local inference vs Remote inference
+└── docs/                            # Photos, diagrams, and technical datasheets
