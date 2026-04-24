@@ -90,7 +90,7 @@ To enable **Standalone Mode** (powering the board without a computer), follow th
 To switch the power source from USB to an external supply, you must move the **JP5** jumper:
 * **Default:** Jumper on **U5V** (Power via ST-LINK USB).
 * **Standalone:** Move the jumper to the **E5V** position.
-![Jumper Configuration](docs/jumper_setup.png)
+![Jumper Configuration](d1174708-f3b9-4fc4-885e-2e514817ec04.jpg)
 ### 2. External Wiring
 Once the jumper is moved, the board can be powered directly via the following pins on the headers:
 * **EXT_IN (or E5V):** Connect the positive terminal of your 5V power source.
