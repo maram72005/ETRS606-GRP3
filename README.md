@@ -78,7 +78,7 @@ To measure the real-time consumption, we used a digital multimeter in series wit
 * **Operating Voltage:** 5V (via EXT_IN)
 * **Measured Current:** ~130 mA during active AI inference and data processing.
 
-
+![Current Measurement](7655d3ac-42e7-42e2-a465-1b329a1ed923.jpg)
 ### 2. Optimization Strategy
 In a real-world scenario, the board does not need to be active 100% of the time. To extend battery life, the project explores the following states:
 * **Active State:** The MCU collects sensor data, runs the AI inference, and transmits results.
