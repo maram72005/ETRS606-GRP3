@@ -83,7 +83,7 @@ ETRS606-GRP3/
 ## Hardware Configuration for Standalone Operation
 
 During the project, we encountered a power management issue: when the board is disconnected from the USB port, the program execution stops. This is due to the default power routing and the ST-LINK reset management.
-
+---
 To enable **Standalone Mode** (powering the board without a computer), follow these steps:
 
 ### 1. Jumper Configuration
