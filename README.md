@@ -113,6 +113,20 @@ The embedded model performs a classification task, assigning a probability to ea
 **Analysis:** In this specific example, the model identifies a dominant "Cloudy" state. The inference is performed locally on the MCU (**Edge AI**), meaning no data was sent to the cloud for this calculation, resulting in zero latency and enhanced privacy.
 ## Repository Structure
 
+## Real-Time Data Visualization Dashboard
+
+To complement the embedded system, a custom **Python-based dashboard** (`meteo_graph.py`) was developed to provide long-term monitoring and data validation. 
+
+### Features & Implementation
+* **Live Telemetry:** The script establishes a multi-threaded UART connection (115200 baud) to parse sensor data and AI predictions simultaneously.
+* **5-Hour Historical Window:** Unlike simple terminal logs, this dashboard implements a sliding window using optimized `collections.deque` buffers. It tracks up to **5 hours of continuous data**, allowing for the observation of meteorological trends and the stability of AI classifications over time.
+* **Graphical Interface:** Using `matplotlib`, the tool displays four synchronized subplots:
+    1. **Environmental Metrics:** Real-time curves for Temperature, Humidity, and Pressure.
+    2. **AI Probability Distribution:** A dedicated chart showing the confidence levels of the 6 weather classes.
+
+This visualization tool is essential for debugging the **Edge AI** performance, as it allows us to correlate sudden sensor changes (e.g., a drop in pressure) with the model's immediate reaction in its weather state prediction.
+![System Visualization](day.svg)
+
 ```text
 ETRS606-GRP3/
 ├── README.md
