@@ -80,3 +80,20 @@ ETRS606-GRP3/
 ├── TP3_Cloud_Connectivity/
 ├── TP4_Cloud_vs_Edge_AI/
 └── docs/
+## Hardware Configuration for Standalone Operation
+
+During the project, we encountered a power management issue: when the board is disconnected from the USB port, the program execution stops. This is due to the default power routing and the ST-LINK reset management.
+
+To enable **Standalone Mode** (powering the board without a computer), follow these steps:
+
+### 1. Jumper Configuration
+To switch the power source from USB to an external supply, you must move the **JP5** jumper:
+* **Default:** Jumper on **U5V** (Power via ST-LINK USB).
+* **Standalone:** Move the jumper to the **E5V** position.
+![Jumper Configuration](docs/jumper_setup.png)
+### 2. External Wiring
+Once the jumper is moved, the board can be powered directly via the following pins on the headers:
+* **EXT_IN (or E5V):** Connect the positive terminal of your 5V power source.
+* **GND:** Connect the ground/negative terminal.
+
+> **Technical Note:** This configuration bypasses the USB power dependency and ensures that the AI model stored in the **Flash memory** starts automatically as soon as the board receives power, without needing a manual reset from the ST-LINK.
