@@ -87,7 +87,30 @@ In a real-world scenario, the board does not need to be active 100% of the time.
 > **Note:** The current consumption of ~130 mA includes the ST-LINK debugger and status LEDs. In a final production prototype, separating the ST-LINK portion of the board would significantly lower this baseline.
 
 ---
+## Real-Time Inference Results
 
+The following output demonstrates the AI model running on the STM32 hardware. The system acquires environmental data and processes it through the neural network to output weather probabilities.
+
+### 1. Sensor Data Acquisition
+The model receives three primary inputs from the X-NUCLEO-IKS01A3 shield:
+* **Temperature:** 26.37 °C
+* **Humidity:** 50.01 %
+* **Pressure:** 1022.88 hPa
+
+### 2. AI Model Output (METEO AI)
+The embedded model performs a classification task, assigning a probability to each possible weather state:
+
+![Inference Result](image_96761c.png)
+
+| Weather State | Probability |
+| :--- | :--- |
+| **Nuageux (Cloudy)** | **38.7%** |
+| **Beau temps (Sunny)** | **26.8%** |
+| **Pluie (Rain)** | **8.0%** |
+| **Brouillard (Fog)** | **0.1%** |
+| **Vent fort / Gel** | **0.0%** |
+
+**Analysis:** In this specific example, the model identifies a dominant "Cloudy" state. The inference is performed locally on the MCU (**Edge AI**), meaning no data was sent to the cloud for this calculation, resulting in zero latency and enhanced privacy.
 ## Repository Structure
 
 ```text
