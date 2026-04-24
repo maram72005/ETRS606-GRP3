@@ -1,0 +1,6 @@
+../Core/Src/hts221_polling.c:21:16:hts_write	40	static
+../Core/Src/hts221_polling.c:26:16:hts_read	40	static
+../Core/Src/hts221_polling.c:32:14:lin_interp	16	static
+../Core/Src/hts221_polling.c:37:5:hts221_init	208	static
+../Core/Src/hts221_polling.c:116:6:hts221_read_temp	16	static
+../Core/Src/hts221_polling.c:128:6:hts221_read_hum	168	static

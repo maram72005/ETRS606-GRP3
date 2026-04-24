@@ -1,0 +1,14 @@
+../../Drivers/STM32N6xx_HAL_Driver/Inc/stm32n6xx_ll_bus.h:1407:22:LL_AHB4_GRP1_EnableClock	1
+../Core/Src/main.c:131:12:ai_init	2
+../Core/Src/main.c:159:13:ai_run	11
+../Core/Src/main.c:251:5:main	11
+../Core/Src/main.c:350:6:SystemClock_Config	8
+../Core/Src/main.c:425:6:PeriphCommonClock_Config	2
+../Core/Src/main.c:437:13:MX_CACHEAXI_Init	2
+../Core/Src/main.c:447:13:MX_ICACHE_Init	3
+../Core/Src/main.c:458:13:MX_GPIO_Init	1
+../Core/Src/main.c:484:13:MX_TIM6_Init	3
+../Core/Src/main.c:503:13:MX_UART4_Init	5
+../Core/Src/main.c:525:13:MX_I2C1_Init	4
+../Core/Src/main.c:544:13:MX_I2C2_Init	4
+../Core/Src/main.c:566:6:Error_Handler	1
