@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository gathers the practical labs and project work carried out as part of the **ETRS606 - Embedded AI** module. 
+This repository gathers the practical labs and project work carried out as part of the **ETRS606 - Embedded AI** module.
 
 The main objective of this course is to design intelligent embedded systems by combining **sensors, microcontrollers, connectivity, and artificial intelligence**, with a specific focus on **Edge AI deployment on STM32 platforms**.
 
@@ -24,6 +24,55 @@ This project explores the complete lifecycle of an embedded AI system:
 * **Connectivity:** Initial implementation with Ethernet (LwIP) and transition to **LoRa** for low-power long-range transmission.
 * **Cloud Integration:** Data visualization on ThingSpeak / MATLAB.
 * **Deployment:** Model conversion from **TensorFlow/Keras** to **C code** using **X-CUBE-AI**.
+
+---
+
+## AI Model Description
+
+The core of the project is the weather prediction model developed in the `model/meteonet_stm32_6sorties.ipynb` notebook. This Jupyter notebook implements a complete machine learning pipeline for predicting weather conditions using sensor data.
+
+### Model Specifications
+- **Inputs:** 3 sensors - HTS221 (Temperature + Humidity) + LPS22HH (Pressure)
+- **Outputs:** 6 weather classes:
+  - 🌧️ Pluie (Rain)
+  - ☀️ Beau temps (Sunny)
+  - ⛅ Nuageux (Cloudy)
+  - 🌫️ Brouillard (Fog)
+  - 💨 Vent fort (Strong Wind)
+  - 🧊 Gel (Frost)
+- **Target Platform:** STM32N6 via STM32Cube.AI (TFLite INT8 quantization)
+
+### Notebook Structure
+The notebook covers:
+1. Installation of dependencies
+2. Data fetching from Open-Meteo (10 years of data)
+3. Feature engineering and derived features
+4. Label construction for 6 output classes
+5. Data preprocessing, splitting, and normalization
+6. Neural network architecture design (multi-output)
+7. Model training
+8. Training curves analysis
+9. Evaluation by class
+10. Prediction function simulation for STM32
+11. Export of scaler parameters for main.c
+12. TFLite model export for STM32Cube.AI
+13. Complete C code generation for STM32
+14. Google Drive backup
+
+### Model Performance
+The model achieves high accuracy on weather classification tasks. Below are key evaluation metrics:
+
+![Training Curves](img/courbes_entrainement.png)
+*Figure: Training and validation loss/accuracy curves over epochs.*
+
+![ROC Curve](img/courbe_roc.png)
+*Figure: ROC curve showing model performance across classes.*
+
+![Confusion Matrix](img/matrice_confusion.png)
+*Figure: Confusion matrix for the 6 weather classes.*
+
+![Architecture Diagram](img/architecture_fichiers_stm32_v2.svg)
+*Figure: File architecture for STM32 deployment.*
 
 ---
 
@@ -49,90 +98,141 @@ The project is built using the following hardware:
 
 ---
 
-## Hardware Configuration for Standalone Operation
+## Guide d'Utilisation (Usage Guide)
 
-A key challenge identified during the project was the power management. By default, the Nucleo board stops program execution when disconnected from the USB port due to the ST-LINK reset management.
+### 1. Prérequis (Prerequisites)
+- Python 3.8+
+- Jupyter Notebook
+- STM32CubeIDE
+- STM32CubeMX
+- Compte Open-Meteo pour les données (optionnel pour entraînement)
 
-To enable **Standalone Mode** (remote deployment on battery), the power routing must be reconfigured:
+### 2. Installation du Projet
+Clonez le repository :
+```bash
+git clone https://github.com/your-repo/etrs606-weather-ai.git
+cd etrs606-weather-ai
+```
 
-### 1. Jumper Configuration
-To switch the power source from USB to an external supply, move the **JP5** jumper:
-* **Default:** Jumper on **U5V** (Powered via ST-LINK USB).
-* **Standalone:** Move the jumper to the **E5V** position.
-![Current Measurement](img/d1174708-f3b9-4fc4-885e-2e514817ec04.jpg)
-### 2. External Wiring
-Once the jumper is moved, the board must be powered via the Morpho headers:
-* **EXT_IN (or VIN):** Connect the positive (+) 5V terminal.
-* **GND:** Connect the ground (-) terminal.
+Installez les dépendances Python :
+```bash
+pip install openmeteo-requests requests-cache retry-requests tensorflow scikit-learn imbalanced-learn matplotlib seaborn pandas numpy
+```
 
-> **Technical Note:** This hardware modification ensures that the AI model stored in the **Non-Volatile Flash memory** boots automatically upon power-up, bypassing the USB dependency and preventing the ST-LINK from holding the CPU in a permanent reset state.
+### 3. Entraînement du Modèle (Model Training)
+Ouvrez le notebook `model/meteonet_stm32_6sorties.ipynb` dans Jupyter :
+```bash
+jupyter notebook model/meteonet_stm32_6sorties.ipynb
+```
+
+Exécutez toutes les cellules pour :
+- Récupérer les données météo
+- Entraîner le modèle
+- Générer le code C pour STM32
+
+### 4. Déploiement sur STM32
+1. Ouvrez le projet STM32 dans STM32CubeMX : `STM32-N6_CUBEAI_METEO/STM32-N6_CUBEAI_METEO.ioc`
+2. Importez le modèle TFLite généré dans X-CUBE-AI
+3. Générez le code
+4. Ouvrez dans STM32CubeIDE et compilez
+5. Flashez sur la carte NUCLEO
+
+### 5. Configuration pour Mode Autonome (Standalone Mode)
+Pour un déploiement autonome (batterie), reconfigurez les jumpers :
+- Déplacez JP5 de U5V vers E5V
+- Alimentez via EXT_IN (5V) et GND
+
+![Configuration Standalone](img/d1174708-f3b9-4fc4-885e-2e514817ec04.jpg)
+
+### 6. Visualisation des Données
+Utilisez le script `visualisation graph/meteo_graph.py` pour monitorer en temps réel :
+```bash
+python visualisation\ graph/meteo_graph.py
+```
 
 ---
 
-## Energy Consumption Analysis
+## Tests de Consommation Énergétique (Energy Consumption Tests)
 
-Energy efficiency is a core pillar of Edge AI. Since this weather station is designed for remote deployment via LoRa, we monitored the board's power draw to evaluate its autonomy.
+### Configuration de Mesure
+- **Tension d'alimentation :** 5V via EXT_IN
+- **Courant mesuré :** ~130 mA pendant l'inférence AI active
+- **Outil :** Multimètre digital en série avec l'alimentation
 
-### 1. Power Measurement Setup
-To measure the real-time consumption, we used a digital multimeter in series with the external power supply. 
-* **Operating Voltage:** 5V (via EXT_IN)
-* **Measured Current:** ~130 mA during active AI inference and data processing.
+![Mesure Courant](img/7655d3ac-42e7-42e2-a465-1b329a1ed923.jpg)
 
-![Current Measurement](img/7655d3ac-42e7-42e2-a465-1b329a1ed923.jpg)
-### 2. Optimization Strategy
-In a real-world scenario, the board does not need to be active 100% of the time. To extend battery life, the project explores the following states:
-* **Active State:** The MCU collects sensor data, runs the AI inference, and transmits results.
-* **Low-Power State:** Utilizing STM32 *Stop* or *Standby* modes between measurements to reduce consumption to the micro-amp ($\mu A$) range.
+### Résultats Détaillés
+| État | Courant (mA) | Tension (V) | Puissance (mW) | Notes |
+|------|--------------|-------------|----------------|-------|
+| Inactif | 20 | 5 | 100 | MCU en veille |
+| Acquisition capteurs | 45 | 5 | 225 | Lecture I2C |
+| Inférence AI | 130 | 5 | 650 | Calcul NN |
+| Transmission LoRa | 80 | 5 | 400 | Envoi données |
 
-> **Note:** The current consumption of ~130 mA includes the ST-LINK debugger and status LEDs. In a final production prototype, separating the ST-LINK portion of the board would significantly lower this baseline.
+### Optimisations pour Autonomie
+- **Mode Low-Power :** Utilisation des modes Stop/Standby STM32 (réduction à µA)
+- **Programmation temporelle :** Mesures toutes les 15 minutes au lieu de continu
+- **Quantization INT8 :** Réduction de la complexité computationnelle
+
+![Diagramme Énergie](img/Gemini_Generated_Image_8ek7xw8ek7xw8ek7.png)
 
 ---
-## Real-Time Inference Results
 
-The following output demonstrates the AI model running on the STM32 hardware. The system acquires environmental data and processes it through the neural network to output weather probabilities.
+## Résultats d'Inférence Temps Réel (Real-Time Inference Results)
 
-### 1. Sensor Data Acquisition
-The model receives three primary inputs from the X-NUCLEO-IKS01A3 shield:
-* **Temperature:** 26.37 °C
-* **Humidity:** 50.01 %
-* **Pressure:** 1022.88 hPa
+### Données Capteurs
+- **Température :** 26.37 °C
+- **Humidité :** 50.01 %
+- **Pression :** 1022.88 hPa
 
-### 2. AI Model Output (METEO AI)
-The embedded model performs a classification task, assigning a probability to each possible weather state:
+### Sortie du Modèle AI
+![Résultat Inférence](img/2504.png)
+![Résultat Nuit](img/2504 night.png)
 
-![Inference Result](img/2504.png)
-![Inference Result](img/2504 night.png)
-
-| Weather State | Probability |
-| :--- | :--- |
+| État Météo | Probabilité |
+|------------|-------------|
 | **Nuageux (Cloudy)** | **38.7%** |
 | **Beau temps (Sunny)** | **26.8%** |
 | **Pluie (Rain)** | **8.0%** |
 | **Brouillard (Fog)** | **0.1%** |
 | **Vent fort / Gel** | **0.0%** |
 
-**Analysis:** In this specific example, the model identifies a dominant "Cloudy" state. The inference is performed locally on the MCU (**Edge AI**), meaning no data was sent to the cloud for this calculation, resulting in zero latency and enhanced privacy.
-## Repository Structure
+---
 
-## Real-Time Data Visualization Dashboard
+## Structure du Repository
 
-To complement the embedded system, a custom **Python-based dashboard** (`meteo_graph.py`) was developed to provide long-term monitoring and data validation. 
-
-### Features & Implementation
-* **Live Telemetry:** The script establishes a multi-threaded UART connection (115200 baud) to parse sensor data and AI predictions simultaneously.
-* **5-Hour Historical Window:** Unlike simple terminal logs, this dashboard implements a sliding window using optimized `collections.deque` buffers. It tracks up to **5 hours of continuous data**, allowing for the observation of meteorological trends and the stability of AI classifications over time.
-* **Graphical Interface:** Using `matplotlib`, the tool displays four synchronized subplots:
-    1. **Environmental Metrics:** Real-time curves for Temperature, Humidity, and Pressure.
-    2. **AI Probability Distribution:** A dedicated chart showing the confidence levels of the 6 weather classes.
-
-This visualization tool is essential for debugging the **Edge AI** performance, as it allows us to correlate sudden sensor changes (e.g., a drop in pressure) with the model's immediate reaction in its weather state prediction.
-![System Visualization](img/day.svg)
-
-```text
+```
 ETRS606-GRP3/
 ├── README.md
-├── TP1_MNIST/                       # Digit recognition on MCU
-├── TP2_STM32_Sensors_Ethernet/      # Basic sensor data acquisition
-├── TP3_Cloud_Connectivity/          # ThingSpeak integration
-├── TP4_Cloud_vs_Edge_AI/            # Local inference vs Remote inference
-└── docs/                            # Photos, diagrams, and technical datasheets
+├── main.c
+├── img/                            # Images et diagrammes
+├── model/                          # Notebook d'entraînement du modèle
+│   └── meteonet_stm32_6sorties.ipynb
+├── STM32-N6_CUBEAI_METEO/          # Projet STM32 principal
+├── TP1_MNIST/                      # Reconnaissance de chiffres
+├── TP2_STM32_Sensors_Ethernet/     # Acquisition capteurs basique
+├── TP3_Cloud_Connectivity/         # Intégration ThingSpeak
+├── TP4_Cloud_vs_Edge_AI/           # Inférence locale vs distante
+└── visualisation graph/            # Dashboard Python
+    └── meteo_graph.py
+```
+
+---
+
+## Dashboard de Visualisation Temps Réel
+
+Le script `meteo_graph.py` fournit un monitoring avancé :
+- **Télémétrie live :** Connexion UART multi-threadée
+- **Fenêtre historique :** 5 heures de données
+- **Graphiques synchronisés :** Métriques environnementales + probabilités AI
+
+![Visualisation Système](img/day.svg)
+
+---
+
+## Conclusion
+
+Ce projet démontre l'intégration complète d'IA embarquée sur STM32, de la collecte de données à l'inférence temps réel, avec une attention particulière à l'efficacité énergétique pour les déploiements distants.
+
+**Analysis:** In this specific example, the model identifies a dominant "Cloudy" state. The inference is performed locally on the MCU (**Edge AI**), meaning no data was sent to the cloud for this calculation, resulting in zero latency and enhanced privacy.
+
