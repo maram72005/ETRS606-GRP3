@@ -59,7 +59,7 @@ To enable **Standalone Mode** (remote deployment on battery), the power routing 
 To switch the power source from USB to an external supply, move the **JP5** jumper:
 * **Default:** Jumper on **U5V** (Powered via ST-LINK USB).
 * **Standalone:** Move the jumper to the **E5V** position.
-![Current Measurement](d1174708-f3b9-4fc4-885e-2e514817ec04.jpg)
+![Current Measurement](img/d1174708-f3b9-4fc4-885e-2e514817ec04.jpg)
 ### 2. External Wiring
 Once the jumper is moved, the board must be powered via the Morpho headers:
 * **EXT_IN (or VIN):** Connect the positive (+) 5V terminal.
@@ -78,7 +78,7 @@ To measure the real-time consumption, we used a digital multimeter in series wit
 * **Operating Voltage:** 5V (via EXT_IN)
 * **Measured Current:** ~130 mA during active AI inference and data processing.
 
-![Current Measurement](7655d3ac-42e7-42e2-a465-1b329a1ed923.jpg)
+![Current Measurement](img/7655d3ac-42e7-42e2-a465-1b329a1ed923.jpg)
 ### 2. Optimization Strategy
 In a real-world scenario, the board does not need to be active 100% of the time. To extend battery life, the project explores the following states:
 * **Active State:** The MCU collects sensor data, runs the AI inference, and transmits results.
@@ -100,7 +100,7 @@ The model receives three primary inputs from the X-NUCLEO-IKS01A3 shield:
 ### 2. AI Model Output (METEO AI)
 The embedded model performs a classification task, assigning a probability to each possible weather state:
 
-![Inference Result](res.png)
+![Inference Result](img/res.png)
 
 | Weather State | Probability |
 | :--- | :--- |
@@ -125,7 +125,7 @@ To complement the embedded system, a custom **Python-based dashboard** (`meteo_g
     2. **AI Probability Distribution:** A dedicated chart showing the confidence levels of the 6 weather classes.
 
 This visualization tool is essential for debugging the **Edge AI** performance, as it allows us to correlate sudden sensor changes (e.g., a drop in pressure) with the model's immediate reaction in its weather state prediction.
-![System Visualization](day.svg)
+![System Visualization](img/day.svg)
 
 ```text
 ETRS606-GRP3/
