@@ -174,7 +174,6 @@ python visualisation\ graph/meteo_graph.py
 - **Programmation temporelle :** Mesures toutes les 15 minutes au lieu de continu
 - **Quantization INT8 :** Réduction de la complexité computationnelle
 
-![Diagramme Énergie](img/Gemini_Generated_Image_8ek7xw8ek7xw8ek7.png)
 
 ---
 
@@ -187,7 +186,7 @@ python visualisation\ graph/meteo_graph.py
 
 ### Sortie du Modèle AI
 ![Résultat Inférence](img/2504.png)
-![Résultat Nuit](img/2504 night.png)
+![Résultat Nuit](img/2504night.png)
 
 | État Météo | Probabilité |
 |------------|-------------|
@@ -226,7 +225,6 @@ Le script `meteo_graph.py` fournit un monitoring avancé :
 - **Fenêtre historique :** 5 heures de données
 - **Graphiques synchronisés :** Métriques environnementales + probabilités AI
 
-![Visualisation Système](img/day.svg)
 
 ---
 
