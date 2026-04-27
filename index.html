@@ -1,1 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Station Météo IA</title>
+    <style>
+        :root {
+            --bleu-fonce: #00457A;
+            --bleu-clair: #0078D7;
+            --fond-gris: #F3F4F6;
+            --blanc: #FFFFFF;
+            --texte-sombre: #1F2937;
+        }
 
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--fond-gris);
+            color: var(--texte-sombre);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--bleu-fonce);
+            color: var(--blanc);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .titre-section {
+            color: var(--bleu-clair);
+            border-bottom: 2px solid var(--bleu-clair);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .grille-meteo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .carte {
+            background-color: var(--blanc);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 15px;
+            text-align: center;
+            border-top: 4px solid var(--bleu-clair);
+        }
+
+        .carte h3 {
+            margin-top: 0;
+            color: var(--bleu-fonce);
+            font-size: 16px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 260px;
+            border: 1px solid #E5E7EB;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Station Météo IA & Capteurs</h1>
+    </header>
+
+    <div class="container">
+        <h2 class="titre-section">Relevés en temps réel</h2>
+        
+        <div class="grille-meteo">
+            <div class="carte">
+                <h3>Température (°C)</h3>
+                <iframe src="https://thingspeak.com/channels/TON_CHANNEL_ID/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+            </div>
+
+            <div class="carte">
+                <h3>Humidité (%)</h3>
+                <iframe src="https://thingspeak.com/channels/TON_CHANNEL_ID/charts/2?bgcolor=%23ffffff&color=%23378ADD&dynamic=true&results=60&type=line&update=15"></iframe>
+            </div>
+
+            <div class="carte">
+                <h3>Pression (hPa)</h3>
+                <iframe src="https://thingspeak.com/channels/TON_CHANNEL_ID/charts/3?bgcolor=%23ffffff&color=%23639922&dynamic=true&results=60&type=line&update=15"></iframe>
+            </div>
+        </div>
+
+        <h2 class="titre-section" style="margin-top: 40px;">Prédictions de l'Intelligence Artificielle</h2>
+        
+        <div class="grille-meteo">
+            <div class="carte" style="border-top-color: #EF9F27;">
+                <h3>Probabilité : Beau Temps</h3>
+                <iframe src="https://thingspeak.com/channels/TON_CHANNEL_ID/charts/5?bgcolor=%23ffffff&color=%23EF9F27&dynamic=true&results=60&type=line&update=15"></iframe>
+            </div>
+            
+            </div>
+    </div>
+
+</body>
+</html>
