@@ -5,6 +5,229 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Station Météo IA</title>
     <style>
+        /* === AMBIANCE MÉTÉO === */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px 10px 20px;
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+        }
+        
+        h1 { margin: 0; font-size: 2.8rem; font-weight: 600; }
+        .sous-titre { font-size: 1.2rem; opacity: 0.9; margin-top: 5px; }
+
+        /* === NAVIGATION === */
+        .onglets {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            gap: 15px;
+        }
+
+        .btn-onglet {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-onglet:hover { background: rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
+        .btn-onglet.actif { background: white; color: #1a73e8; box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+
+        /* === CONTENU === */
+        .contenu-onglet {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 50px 20px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .contenu-onglet.actif { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === GRILLE ET CARTES === */
+        .grille {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .carte {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .carte:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(0,0,0,0.12); }
+        
+        .carte h3 { 
+            margin-top: 0; 
+            color: #1a73e8; 
+            font-size: 1.3rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* NOUVEAU STYLE POUR LES CHIFFRES SANS CADRE */
+        .valeur-chiffre {
+            font-size: 4rem; /* Énorme ! */
+            font-weight: 700;
+            color: #333; /* Gris foncé élégant */
+            margin: 30px 0;
+            letter-spacing: -2px;
+        }
+        .valeur-chiffre .unite {
+            font-size: 1.5rem;
+            color: #888;
+            font-weight: normal;
+            letter-spacing: 0;
+        }
+
+        /* Les IFrames ne servent plus que pour les graphiques */
+        iframe { width: 100%; height: 260px; border: none; border-radius: 8px; }
+        .section-titre { color: white; text-align: center; font-size: 1.8rem; margin: 40px 0 20px 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>☀️ Station Météo IA ⛅</h1>
+        <div class="sous-titre">Analyse Atmosphérique en Temps Réel</div>
+    </header>
+
+    <div class="onglets">
+        <button class="btn-onglet actif" onclick="changerOnglet('onglet-donnees', this)">🌡️ Données Actuelles</button>
+        <button class="btn-onglet" onclick="changerOnglet('onglet-graphiques', this)">📈 Graphiques Détaillés</button>
+    </div>
+
+    <div id="onglet-donnees" class="contenu-onglet actif">
+        
+        <h2 class="section-titre">Relevés des Capteurs</h2>
+        <div class="grille">
+            <div class="carte">
+                <h3>Température</h3>
+                <div id="val-temp" class="valeur-chiffre">-- <span class="unite">°C</span></div>
+            </div>
+            <div class="carte">
+                <h3>Humidité</h3>
+                <div id="val-hum" class="valeur-chiffre">-- <span class="unite">%</span></div>
+            </div>
+            <div class="carte">
+                <h3>Pression</h3>
+                <div id="val-pres" class="valeur-chiffre">-- <span class="unite">hPa</span></div>
+            </div>
+        </div>
+
+        <h2 class="section-titre">Prédictions de l'IA</h2>
+        <div class="grille">
+            <div class="carte">
+                <h3>Probabilité : Pluie 🌧️</h3>
+                <div id="val-pluie" class="valeur-chiffre">-- <span class="unite">%</span></div>
+            </div>
+            <div class="carte">
+                <h3>Probabilité : Beau temps ☀️</h3>
+                <div id="val-beau" class="valeur-chiffre">-- <span class="unite">%</span></div>
+            </div>
+            <div class="carte">
+                <h3>Probabilité : Nuageux ☁️</h3>
+                <div id="val-nuageux" class="valeur-chiffre">-- <span class="unite">%</span></div>
+            </div>
+            <div class="carte">
+                <h3>Probabilité : Brouillard 🌫️</h3>
+                <div id="val-brouillard" class="valeur-chiffre">-- <span class="unite">%</span></div>
+            </div>
+            <div class="carte">
+                <h3>Probabilité : Vent fort 💨</h3>
+                <div id="val-vent" class="valeur-chiffre">-- <span class="unite">%</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="onglet-graphiques" class="contenu-onglet">
+        <h2 class="section-titre">Évolution dans le temps</h2>
+        <div class="grille">
+            <div class="carte">
+                <h3>Courbe Température</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/charts/1?dynamic=true&results=60&type=line"></iframe>
+            </div>
+            <div class="carte">
+                <h3>Courbe Humidité</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/charts/2?dynamic=true&results=60&type=line"></iframe>
+            </div>
+            <div class="carte">
+                <h3>Courbe Pression</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/charts/3?dynamic=true&results=60&type=line"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion des onglets
+        function changerOnglet(idOnglet, boutonClique) {
+            document.querySelectorAll('.contenu-onglet').forEach(onglet => onglet.classList.remove('actif'));
+            document.querySelectorAll('.btn-onglet').forEach(btn => btn.classList.remove('actif'));
+            document.getElementById(idOnglet).classList.add('actif');
+            boutonClique.classList.add('actif');
+        }
+
+        // NOUVEAU : Récupération des données API ThingSpeak
+        async function fetchThingSpeakData() {
+            try {
+                // On interroge l'API publique de ton channel pour avoir la TOUTE DERNIÈRE donnée lue
+                const reponse = await fetch('https://api.thingspeak.com/channels/3339078/feeds/last.json');
+                const data = await reponse.json();
+
+                // On met à jour l'intérieur des balises HTML avec nos beaux styles
+                // parseFloat() et toFixed() permettent de formater les chiffres proprement sans trop de virgules
+                document.getElementById('val-temp').innerHTML = parseFloat(data.field1).toFixed(1) + '<span class="unite">°C</span>';
+                document.getElementById('val-hum').innerHTML = parseFloat(data.field2).toFixed(0) + '<span class="unite">%</span>';
+                document.getElementById('val-pres').innerHTML = parseFloat(data.field3).toFixed(0) + '<span class="unite">hPa</span>';
+                
+                document.getElementById('val-pluie').innerHTML = parseFloat(data.field4).toFixed(0) + '<span class="unite">%</span>';
+                document.getElementById('val-beau').innerHTML = parseFloat(data.field5).toFixed(0) + '<span class="unite">%</span>';
+                document.getElementById('val-nuageux').innerHTML = parseFloat(data.field6).toFixed(0) + '<span class="unite">%</span>';
+                document.getElementById('val-brouillard').innerHTML = parseFloat(data.field7).toFixed(0) + '<span class="unite">%</span>';
+                document.getElementById('val-vent').innerHTML = parseFloat(data.field8).toFixed(0) + '<span class="unite">%</span>';
+                
+            } catch (erreur) {
+                console.error("Erreur de récupération des données ThingSpeak : ", erreur);
+            }
+        }
+
+        // On lance la fonction immédiatement au chargement de la page
+        fetchThingSpeakData();
+        
+        // Et on la relance automatiquement toutes les 15 secondes (15000 millisecondes)
+        setInterval(fetchThingSpeakData, 15000);
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Station Météo IA</title>
+    <style>
         /* === AMBIANCE MÉTÉO (Bleu ciel et nuages) === */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
