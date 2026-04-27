@@ -57,16 +57,16 @@ The notebook covers:
 ### Model Performance
 The model achieves high accuracy on weather classification tasks. Below are key evaluation metrics:
 
-![Training Curves](__img/courbes_entrainement.png__)
+![Training Curves](img/courbes_entrainement.png)
 *Figure: Training and validation loss/accuracy curves over epochs.*
 
-![ROC Curve](__img/courbe_roc.png__)
+![ROC Curve](img/courbe_roc.png)
 *Figure: ROC curve showing model performance across classes.*
 
-![Confusion Matrix](__img/matrice_confusion.png__)
+![Confusion Matrix](img/matrice_confusion.png)
 *Figure: Confusion matrix for the 6 weather classes.*
 
-![Architecture Diagram](__img/architecture_fichiers_stm32_v2.svg__)
+![Architecture Diagram]img/architecture_fichiers_stm32_v2.svg)
 *Figure: File architecture for STM32 deployment.*
 
 ---
@@ -134,7 +134,7 @@ For standalone deployment (battery-powered), reconfigure the jumpers:
 - Move JP5 from U5V to E5V
 - Power via EXT_IN (5V) and GND
 
-![Standalone Configuration](__img/d1174708-f3b9-4fc4-885e-2e514817ec04.jpg__)
+![Standalone Configuration](img/d1174708-f3b9-4fc4-885e-2e514817ec04.jpg)
 
 ### 6. Data Visualization
 Use the script `visualisation graph/meteo_graph.py` to monitor in real time:
@@ -151,7 +151,7 @@ python "visualisation graph/meteo_graph.py"
 - **Measured current:** ~130 mA during active AI inference
 - **Tool:** Digital multimeter in series with the power supply
 
-![Current Measurement](__img/7655d3ac-42e7-42e2-a465-1b329a1ed923.jpg__)
+![Current Measurement](img/7655d3ac-42e7-42e2-a465-1b329a1ed923.jpg)
 
 ### Detailed Results
 
@@ -178,8 +178,8 @@ python "visualisation graph/meteo_graph.py"
 
 ### AI Model Output
 
-![Inference Result](__img/2504.png__)
-![Night Result](__img/2504night.png__)
+![Inference Result](img/2504.png)
+![Night Result](img/2504night.png)
 
 | Weather State | Probability |
 |---------------|-------------|
