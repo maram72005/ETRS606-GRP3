@@ -20,6 +20,7 @@ This project explores the complete lifecycle of an embedded AI system:
 * **Connectivity:** Initial implementation with Ethernet (LwIP) and transition to **LoRa** for low-power long-range transmission.
 * **Cloud Integration:** Data visualization on ThingSpeak / MATLAB.
 * **Deployment:** Model conversion from **TensorFlow/Keras** to **C code** using **X-CUBE-AI**.
+![Training Curves](res.png)
 
 ---
 
