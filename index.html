@@ -3,222 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Station Météo IA</title>
+    <title>SYS_METEO // NEURAL_LINK</title>
     <style>
-        /* === AMBIANCE MÉTÉO === */
+        /* === THEME CYBERPUNK === */
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ea;
+            --neon-yellow: #fcee0a;
+            --neon-green: #39ff14;
+            --bg-dark: #050508;
+            --panel-bg: rgba(5, 10, 15, 0.8);
+            --grid-color: rgba(0, 243, 255, 0.05);
+            --glow-current: var(--neon-cyan); /* Modifié dynamiquement par JS */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
-            color: #333;
+            font-family: 'Courier New', Courier, monospace;
             min-height: 100vh;
+            background-color: var(--bg-dark);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 20px 40px;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        header {
-            text-align: center;
-            padding: 30px 20px 10px 20px;
-            color: white;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+        /* Effet de Grille Matrix/Hacker */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: 0;
+            pointer-events: none;
         }
-        
-        h1 { margin: 0; font-size: 2.8rem; font-weight: 600; }
-        .sous-titre { font-size: 1.2rem; opacity: 0.9; margin-top: 5px; }
 
-        /* === NAVIGATION === */
-        .onglets {
+        /* Effet Scanline (Vieux moniteur CRT) */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .content { position: relative; z-index: 5; width: 100%; max-width: 480px; }
+
+        /* Nav bar */
+        .nav {
             display: flex;
             justify-content: center;
-            margin: 30px 0;
             gap: 15px;
+            margin-bottom: 30px;
         }
-
-        .btn-onglet {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid white;
-            color: white;
-            padding: 12px 30px;
-            font-size: 1.1rem;
+        .nav a {
+            text-decoration: none;
+            padding: 8px 20px;
+            font-size: 0.9rem;
             font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+        .nav a.active, .nav a:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-cyan);
         }
 
-        .btn-onglet:hover { background: rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
-        .btn-onglet.actif { background: white; color: #1a73e8; box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-
-        /* === CONTENU === */
-        .contenu-onglet {
-            display: none;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px 50px 20px;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        .contenu-onglet.actif { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* === GRILLE ET CARTES === */
-        .grille {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        .carte {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 20px;
+        /* Hero / Header */
+        .hero {
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
-        }
-
-        .carte:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(0,0,0,0.12); }
-        
-        .carte h3 { 
-            margin-top: 0; 
-            color: #1a73e8; 
-            font-size: 1.3rem;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 10px;
+            padding: 20px 0 30px;
+            border-bottom: 2px dashed rgba(255,255,255,0.2);
             margin-bottom: 20px;
         }
-
-        /* NOUVEAU STYLE POUR LES CHIFFRES SANS CADRE */
-        .valeur-chiffre {
-            font-size: 4rem; /* Énorme ! */
-            font-weight: 700;
-            color: #333; /* Gris foncé élégant */
-            margin: 30px 0;
-            letter-spacing: -2px;
-        }
-        .valeur-chiffre .unite {
+        .city-name {
             font-size: 1.5rem;
-            color: #888;
-            font-weight: normal;
-            letter-spacing: 0;
+            color: var(--glow-current);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px var(--glow-current);
+        }
+        .hero-temp {
+            font-size: 6rem;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 2px 2px 0px #f00, -2px -2px 0px #0ff; /* Glitch effect */
+        }
+        .hero-condition {
+            font-size: 1.2rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: var(--glow-current);
+            color: #000;
+            display: inline-block;
+            padding: 5px 15px;
+            margin-bottom: 10px;
+        }
+        .hero-range { font-size: 1rem; color: #aaa; }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
-        /* Les IFrames ne servent plus que pour les graphiques */
-        iframe { width: 100%; height: 260px; border: none; border-radius: 8px; }
-        .section-titre { color: white; text-align: center; font-size: 1.8rem; margin: 40px 0 20px 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: 4px solid var(--glow-current);
+            padding: 15px;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        .card::before { /* Décoration HUD */
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 20px; height: 20px;
+            border-top: 2px solid var(--glow-current); border-right: 2px solid var(--glow-current);
+        }
+
+        .card-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .card-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+        }
+        .card-unit { font-size: 1rem; color: var(--glow-current); }
+
+        /* Verdict IA Panel */
+        .card-verdict {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left-color: var(--neon-pink);
+        }
+        .card-verdict::before { border-color: var(--neon-pink); }
+        
+        .verdict-left .verdict-title {
+            color: var(--neon-pink);
+            font-weight: bold;
+        }
+        .verdict-label {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: glitch 3s infinite;
+        }
+        
+        .verdict-right { text-align: right; }
+        .verdict-confidence { font-size: 2.5rem; font-weight: bold; color: #fff; }
+        .confidence-label { color: #888; text-transform: uppercase; font-size: 0.8rem; }
+
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            2% { transform: translate(-2px, 2px) }
+            4% { transform: translate(2px, -2px) }
+            6% { transform: translate(0) }
+            100% { transform: translate(0) }
+        }
+
+        /* Terminal TalkBack */
+        .card-talkback {
+            border-left-color: var(--neon-yellow);
+            font-size: 0.85rem;
+        }
+        .card-talkback::before { border-color: var(--neon-yellow); }
+        .talkback-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; }
+        .tb-badge { background: var(--neon-yellow); color: #000; padding: 2px 8px; font-weight: bold; }
+        
+        .talkback-list { list-style: none; max-height: 200px; overflow-y: auto; }
+        .talkback-list li {
+            display: flex; justify-content: space-between; padding: 8px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+        }
+        .talkback-list li::before { content: '>'; color: var(--neon-yellow); margin-right: 10px; }
+        .tb-time { color: #666; }
+        .tb-cmd { color: #fff; font-weight: bold; }
+
+        .update-bar {
+            text-align: center; font-size: 0.8rem; color: #555; margin-top: 20px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .dot { width: 8px; height: 8px; background: var(--neon-green); display: inline-block; animation: blink 1s infinite; box-shadow: 0 0 5px var(--neon-green); }
+        @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: 0.2 } }
+
     </style>
 </head>
 <body>
+    <div class="content">
+        <nav class="nav">
+            <a href="#" class="active">SYS_METEO</a>
+            <a href="graphs.html">DATA_LOG</a>
+        </nav>
 
-    <header>
-        <h1>☀️ Station Météo IA ⛅</h1>
-        <div class="sous-titre">Analyse Atmosphérique en Temps Réel</div>
-    </header>
+        <div class="hero">
+            <div class="city-name" id="station-name">NODE_UNKNOWN</div>
+            <div class="hero-temp"><span id="temp">--</span><span style="font-size:3rem">°</span></div>
+            <div class="hero-condition" id="hero-condition">AWAITING_DATA...</div>
+            <div class="hero-range" id="hero-range">AI_CONFIDENCE: -- %</div>
+        </div>
 
-    <div class="onglets">
-        <button class="btn-onglet actif" onclick="changerOnglet('onglet-donnees', this)">🌡️ Données Actuelles</button>
-        <button class="btn-onglet" onclick="changerOnglet('onglet-graphiques', this)">📈 Graphiques Détaillés</button>
-    </div>
-
-    <div id="onglet-donnees" class="contenu-onglet actif">
-        
-        <h2 class="section-titre">Relevés des Capteurs</h2>
-        <div class="grille">
-            <div class="carte">
-                <h3>Température</h3>
-                <div id="val-temp" class="valeur-chiffre">-- <span class="unite">°C</span></div>
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-label">SYS.HUMIDITY</div>
+                <div class="card-value"><span id="hum">--</span><span class="card-unit"> %</span></div>
             </div>
-            <div class="carte">
-                <h3>Humidité</h3>
-                <div id="val-hum" class="valeur-chiffre">-- <span class="unite">%</span></div>
+            <div class="card">
+                <div class="card-label">SYS.PRESSURE</div>
+                <div class="card-value"><span id="press">--</span><span class="card-unit"> hPa</span></div>
             </div>
-            <div class="carte">
-                <h3>Pression</h3>
-                <div id="val-pres" class="valeur-chiffre">-- <span class="unite">hPa</span></div>
+            
+            <div class="card card-verdict">
+                <div class="verdict-left">
+                    <div class="card-label verdict-title">NEURAL_NET.OUT</div>
+                    <div class="verdict-label" id="verdict">PROCESSING...</div>
+                </div>
+                <div class="verdict-right">
+                    <div class="verdict-confidence"><span id="prob">--</span>%</div>
+                    <div class="confidence-label">ACCURACY</div>
+                </div>
             </div>
         </div>
 
-        <h2 class="section-titre">Prédictions de l'IA</h2>
-        <div class="grille">
-            <div class="carte">
-                <h3>Probabilité : Pluie 🌧️</h3>
-                <div id="val-pluie" class="valeur-chiffre">-- <span class="unite">%</span></div>
+        <div class="card card-talkback">
+            <div class="talkback-header">
+                <div class="card-label" style="margin-bottom:0">CMD_HISTORY // TALKBACK</div>
+                <span class="tb-badge" id="tb-count">0</span>
             </div>
-            <div class="carte">
-                <h3>Probabilité : Beau temps ☀️</h3>
-                <div id="val-beau" class="valeur-chiffre">-- <span class="unite">%</span></div>
-            </div>
-            <div class="carte">
-                <h3>Probabilité : Nuageux ☁️</h3>
-                <div id="val-nuageux" class="valeur-chiffre">-- <span class="unite">%</span></div>
-            </div>
-            <div class="carte">
-                <h3>Probabilité : Brouillard 🌫️</h3>
-                <div id="val-brouillard" class="valeur-chiffre">-- <span class="unite">%</span></div>
-            </div>
-            <div class="carte">
-                <h3>Probabilité : Vent fort 💨</h3>
-                <div id="val-vent" class="valeur-chiffre">-- <span class="unite">%</span></div>
-            </div>
+            <ul class="talkback-list" id="talkback-list">
+                <li style="color:#666">CONNECTING TO SECURE SERVER...</li>
+            </ul>
         </div>
-    </div>
 
-    <div id="onglet-graphiques" class="contenu-onglet">
-        <h2 class="section-titre">Évolution dans le temps</h2>
-        <div class="grille">
-            <div class="carte">
-                <h3>Courbe Température</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/1?dynamic=true&results=60&type=line"></iframe>
-            </div>
-            <div class="carte">
-                <h3>Courbe Humidité</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/2?dynamic=true&results=60&type=line"></iframe>
-            </div>
-            <div class="carte">
-                <h3>Courbe Pression</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/3?dynamic=true&results=60&type=line"></iframe>
-            </div>
+        <div class="update-bar">
+            <span class="dot"></span> LIVE LINK · LAST_SYNC: <strong id="heure" style="color:var(--neon-green)">--:--:--</strong>
         </div>
     </div>
 
     <script>
-        // Gestion des onglets
-        function changerOnglet(idOnglet, boutonClique) {
-            document.querySelectorAll('.contenu-onglet').forEach(onglet => onglet.classList.remove('actif'));
-            document.querySelectorAll('.btn-onglet').forEach(btn => btn.classList.remove('actif'));
-            document.getElementById(idOnglet).classList.add('actif');
-            boutonClique.classList.add('actif');
+ let cfg = {};
+        let currentThemeIndex = -1;
+
+        const root = document.documentElement;
+
+        // TES 5 CLASSES MÉTÉO (Dans le même ordre que ton code Python)
+        // 0: Pluie, 1: Beau temps, 2: Nuageux, 3: Brouillard, 4: Vent fort
+        const CONDITIONS = [
+            { label:"PRECIPITATION", color:"#00f3ff" }, // Pluie (Neon Cyan)
+            { label:"CLEAR_SKY",     color:"#fcee0a" }, // Beau temps (Neon Yellow)
+            { label:"CLOUDY",        color:"#ffffff" }, // Nuageux (Blanc)
+            { label:"FOG_DETECTED",  color:"#ff00ea" }, // Brouillard (Neon Pink)
+            { label:"HIGH_WIND",     color:"#39ff14" }  // Vent fort (Neon Green)
+        ];
+
+        function setTheme(index) {
+            if(index === currentThemeIndex) return;
+            currentThemeIndex = index;
+            const c = CONDITIONS[index];
+            
+            // Applique la couleur de glow dynamique à toute l'interface
+            root.style.setProperty('--glow-current', c.color);
+            
+            document.getElementById('verdict').textContent = c.label;
+            document.getElementById('verdict').style.color = c.color;
+            document.getElementById('hero-condition').textContent = c.label;
         }
 
-        // NOUVEAU : Récupération des données API ThingSpeak
-        async function fetchThingSpeakData() {
+        async function loadConfig() {
             try {
-                // On interroge l'API publique de ton channel pour avoir la TOUTE DERNIÈRE donnée lue
-                const reponse = await fetch('https://api.thingspeak.com/channels/3339078/feeds/last.json');
-                const data = await reponse.json();
-
-                // On met à jour l'intérieur des balises HTML avec nos beaux styles
-                // parseFloat() et toFixed() permettent de formater les chiffres proprement sans trop de virgules
-                document.getElementById('val-temp').innerHTML = parseFloat(data.field1).toFixed(1) + '<span class="unite">°C</span>';
-                document.getElementById('val-hum').innerHTML = parseFloat(data.field2).toFixed(0) + '<span class="unite">%</span>';
-                document.getElementById('val-pres').innerHTML = parseFloat(data.field3).toFixed(0) + '<span class="unite">hPa</span>';
-                
-                document.getElementById('val-pluie').innerHTML = parseFloat(data.field4).toFixed(0) + '<span class="unite">%</span>';
-                document.getElementById('val-beau').innerHTML = parseFloat(data.field5).toFixed(0) + '<span class="unite">%</span>';
-                document.getElementById('val-nuageux').innerHTML = parseFloat(data.field6).toFixed(0) + '<span class="unite">%</span>';
-                document.getElementById('val-brouillard').innerHTML = parseFloat(data.field7).toFixed(0) + '<span class="unite">%</span>';
-                document.getElementById('val-vent').innerHTML = parseFloat(data.field8).toFixed(0) + '<span class="unite">%</span>';
-                
-            } catch (erreur) {
-                console.error("Erreur de récupération des données ThingSpeak : ", erreur);
+                const r = await fetch('config.json');
+                cfg = await r.json();
+                document.getElementById('station-name').textContent = cfg.station.name;
+            } catch(e) {
+                // RENTRE TES INFORMATIONS THINGSPEAK ICI !
+                cfg = {
+                    thingspeak:{ 
+                        channelID:'TON_CHANNEL_ID', 
+                        readAPIKey:'TA_CLE_API_READ', 
+                        talkbackID:'TON_TALKBACK_ID', 
+                        talkbackAPIKey:'TA_CLE_API_TALKBACK' 
+                    },
+                    station:{ name:'STM32_CORTEX', refreshInterval:15000 }
+                };
+                document.getElementById('station-name').textContent = cfg.station.name;
             }
         }
 
-        // On lance la fonction immédiatement au chargement de la page
-        fetchThingSpeakData();
-        
-        // Et on la relance automatiquement toutes les 15 secondes (15000 millisecondes)
-        setInterval(fetchThingSpeakData, 15000);
+        async function fetchMeteo() {
+            const {channelID,readAPIKey} = cfg.thingspeak;
+            try {
+                const r = await fetch(`https://api.thingspeak.com/channels/${channelID}/feeds.json?api_key=${readAPIKey}&results=1`);
+                const data = await r.json();
+                if(!data.feeds?.length) return;
+                const f = data.feeds[0];
+                
+                // Champs Capteurs
+                if(f.field1) document.getElementById('temp').textContent=parseFloat(f.field1).toFixed(1);
+                if(f.field2) document.getElementById('hum').textContent=parseFloat(f.field2).toFixed(0);
+                if(f.field3) document.getElementById('press').textContent=parseFloat(f.field3).toFixed(0);
+                
+                // --- NOUVELLE LOGIQUE IA ---
+                // On met les 5 champs de probabilités dans un tableau (si vide, on met 0)
+                const probabilites = [
+                    parseFloat(f.field4) || 0, // Index 0 : Pluie
+                    parseFloat(f.field5) || 0, // Index 1 : Beau temps
+                    parseFloat(f.field6) || 0, // Index 2 : Nuageux
+                    parseFloat(f.field7) || 0, // Index 3 : Brouillard
+                    parseFloat(f.field8) || 0  // Index 4 : Vent fort
+                ];
+
+                // On cherche la valeur maximum dans le tableau
+                const maxProb = Math.max(...probabilites);
+                
+                // On cherche à quel index (quelle classe) correspond ce maximum
+                const winningIndex = probabilites.indexOf(maxProb);
+
+                // On met à jour l'affichage avec le gagnant
+                if(maxProb > 0) {
+                    document.getElementById('prob').textContent = maxProb.toFixed(1);
+                    document.getElementById('hero-range').textContent = `AI_CONFIDENCE: ${maxProb.toFixed(1)} %`;
+                    setTheme(winningIndex);
+                }
+                
+                document.getElementById('heure').textContent=new Date(f.created_at).toLocaleTimeString();
+            } catch(e){console.error('Sensor Link Error:',e);}
+        }
+
+        async function fetchTalkBack() {
+            const {talkbackID,talkbackAPIKey} = cfg.thingspeak;
+            if(!talkbackID || talkbackID === 'TON_TALKBACK_ID') return; 
+
+            try {
+                const r = await fetch(`https://api.thingspeak.com/talkbacks/${talkbackID}/commands.json?api_key=${talkbackAPIKey}`);
+                const cmds = await r.json();
+                const list = document.getElementById('talkback-list');
+                document.getElementById('tb-count').textContent=cmds.length;
+                list.innerHTML='';
+                
+                if(!cmds.length){
+                    list.innerHTML='<li style="justify-content:center;color:#666">NO_COMMANDS_IN_QUEUE</li>';
+                    return;
+                }
+                
+                [...cmds].reverse().forEach(cmd=>{
+                    const li=document.createElement('li');
+                    const time=new Date(cmd.created_at).toLocaleTimeString();
+                    li.innerHTML=`<span class="tb-cmd">${cmd.command_string}</span> <span class="tb-time">[${time}]</span>`;
+                    list.appendChild(li);
+                });
+            } catch(e){console.error('TalkBack Error:',e);}
+        }
+
+        async function init() {
+            await loadConfig();
+            const refresh = () => { fetchMeteo(); fetchTalkBack(); };
+            refresh();
+            setInterval(refresh, cfg.station.refreshInterval);
+        }
+        init();
     </script>
 </body>
 </html>
