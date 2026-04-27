@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SYS_METEO // DATA_LOG</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #050508;
+            color: #00f3ff;
+            padding: 40px;
+            text-align: center;
+        }
+        .nav { margin-bottom: 30px; }
+        .nav a {
+            color: #00f3ff; border: 1px solid #00f3ff;
+            padding: 10px 20px; text-decoration: none; margin: 0 10px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 15px;
+        }
+        iframe { width: 100%; height: 260px; border: none; filter: invert(0.9) hue-rotate(180deg); }
+        h1 { letter-spacing: 5px; margin-bottom: 40px; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html"> < RETURN_HOME </a>
+    </nav>
+    <h1>DATABASE_VISUALIZATION</h1>
+    <div class="grid">
+        <div class="card"><h3>TEMP_HISTORY</h3><iframe src="https://thingspeak.com/channels/3339078/charts/1?dynamic=true"></iframe></div>
+        <div class="card"><h3>HUMIDITY_LOG</h3><iframe src="https://thingspeak.com/channels/3339078/charts/2?dynamic=true"></iframe></div>
+        <div class="card"><h3>PRESSURE_LOG</h3><iframe src="https://thingspeak.com/channels/3339078/charts/3?dynamic=true"></iframe></div>
+        <div class="card"><h3>AI_PREDICTIONS_STREAM</h3><iframe src="https://thingspeak.com/channels/3339078/charts/4?dynamic=true"></iframe></div>
+    </div>
+</body>
+</html>
