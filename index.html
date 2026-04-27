@@ -3,225 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Station Météo IA - Dashboard Futuriste</title>
+    <title>Station Météo IA</title>
     <style>
-        /* === VARIABLES FUTURISTES === */
-        :root {
-            --neon-bleu: #00f3ff;
-            --neon-violet: #bc13fe;
-            --fond-panel: rgba(10, 10, 25, 0.6);
-            --bordure-panel: rgba(0, 243, 255, 0.3);
-        }
-
-        /* === FOND DYNAMIQUE === */
+        /* === AMBIANCE MÉTÉO (Bleu ciel et nuages) === */
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            font-family: 'Courier New', Courier, monospace; /* Police style code/hacker */
-            color: #fff;
-            background-size: cover;
-            background-attachment: fixed;
-            transition: background 2s ease-in-out;
+            /* Magnifique dégradé bleu ciel */
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+            color: #333;
             min-height: 100vh;
         }
-
-        /* Classes appliquées par le JavaScript selon l'heure */
-        .fond-jour { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
-        .fond-crepuscule { background: linear-gradient(135deg, #2b0f4c, #6a0b5a, #8c1c44); }
-        .fond-nuit { background: linear-gradient(135deg, #050505, #0a0a2a, #001122); }
 
         /* === EN-TÊTE === */
         header {
             text-align: center;
-            padding: 20px;
-            text-shadow: 0 0 10px var(--neon-bleu);
-            border-bottom: 1px solid var(--bordure-panel);
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(10px);
+            padding: 30px 20px 10px 20px;
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
         }
         
-        h1 { margin: 0; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 3px; }
+        h1 { 
+            margin: 0; 
+            font-size: 2.8rem; 
+            font-weight: 600;
+        }
+
+        .sous-titre {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
 
         /* === NAVIGATION (ONGLETS) === */
         .onglets {
             display: flex;
             justify-content: center;
-            margin: 20px 0;
-            gap: 20px;
+            margin: 30px 0;
+            gap: 15px;
         }
 
         .btn-onglet {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--neon-bleu);
-            color: var(--neon-bleu);
-            padding: 10px 30px;
-            font-size: 1.2rem;
-            font-family: inherit;
-            cursor: pointer;
-            border-radius: 5px;
-            text-transform: uppercase;
-            transition: 0.3s;
-            box-shadow: 0 0 5px rgba(0, 243, 255, 0.2);
-        }
-
-        .btn-onglet:hover, .btn-onglet.actif {
-            background: var(--neon-bleu);
-            color: #000;
-            box-shadow: 0 0 15px var(--neon-bleu);
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.1rem;
             font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        /* === CONTENU DES ONGLETS === */
+        .btn-onglet:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Style quand l'onglet est sélectionné */
+        .btn-onglet.actif {
+            background: white;
+            color: #1a73e8; /* Bleu vif */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        /* === CONTENU === */
         .contenu-onglet {
             display: none; /* Caché par défaut */
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            animation: fadeIn 0.5s ease-in-out;
+            padding: 0 20px 50px 20px;
+            animation: fadeIn 0.4s ease-in-out;
         }
 
-        .contenu-onglet.actif { display: block; } /* Affiché si actif */
+        .contenu-onglet.actif { 
+            display: block; 
+        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
-        /* === GRILLE ET PANNEAUX (GLASSMORPHISM) === */
+        /* === GRILLE ET CARTES === */
         .grille {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 25px;
         }
 
-        .panel {
-            background: var(--fond-panel);
-            backdrop-filter: blur(15px); /* Effet verre flouté */
-            border: 1px solid var(--bordure-panel);
-            border-radius: 10px;
+        .carte {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
             padding: 20px;
             text-align: center;
-            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.05), 0 5px 15px rgba(0,0,0,0.5);
-            transition: transform 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
         }
 
-        .panel:hover {
+        .carte:hover {
             transform: translateY(-5px);
-            border-color: var(--neon-bleu);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.12);
         }
 
-        .panel h3 { margin-top: 0; color: var(--neon-violet); text-shadow: 0 0 5px var(--neon-violet); }
+        .carte h3 { 
+            margin-top: 0; 
+            color: #1a73e8; 
+            font-size: 1.3rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
 
-        /* Style des Iframes ThingSpeak */
+        /* Style des IFrames */
         iframe {
             width: 100%;
             height: 260px;
             border: none;
-            border-radius: 5px;
-            background: transparent;
-            filter: invert(0.9) hue-rotate(180deg); /* Astuce de fou : inverse les couleurs pour rendre les graphiques blancs/sombres ! */
+            border-radius: 8px;
         }
 
-        /* Chiffres en temps réel */
-        .valeur-direct { font-size: 3rem; font-weight: bold; color: var(--neon-bleu); text-shadow: 0 0 10px var(--neon-bleu); margin: 20px 0; }
+        /* Section titres dans les onglets */
+        .section-titre {
+            color: white;
+            text-align: center;
+            font-size: 1.8rem;
+            margin: 40px 0 20px 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
-<body id="body-fond">
+<body>
 
     <header>
-        <h1>SYS-METEO // CORTEX-M55 AI</h1>
-        <p>Analyse Atmosphérique Neuronale en Temps Réel</p>
+        <h1>☀️ Station Météo IA ⛅</h1>
+        <div class="sous-titre">Analyse Atmosphérique en Temps Réel</div>
     </header>
 
     <div class="onglets">
-        <button class="btn-onglet actif" onclick="changerOnglet('onglet-direct', this)">Temps Actuel</button>
-        <button class="btn-onglet" onclick="changerOnglet('onglet-graphiques', this)">Analyse Graphique</button>
+        <button class="btn-onglet actif" onclick="changerOnglet('onglet-donnees', this)">🌡️ Données Actuelles</button>
+        <button class="btn-onglet" onclick="changerOnglet('onglet-graphiques', this)">📈 Graphiques Détaillés</button>
     </div>
 
-    <div id="onglet-direct" class="contenu-onglet actif">
+    <div id="onglet-donnees" class="contenu-onglet actif">
+        
+        <h2 class="section-titre">Relevés des Capteurs</h2>
         <div class="grille">
-            <div class="panel">
-                <h3>Température</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/1?bgcolor=%23000000&color=%2300f3ff&dynamic=true&results=1&type=column"></iframe>
+            <div class="carte">
+                <h3>Température (°C)</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/widgets/TON_WIDGET_ID"></iframe>
             </div>
-            <div class="panel">
-                <h3>Humidité</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/2?bgcolor=%23000000&color=%23bc13fe&dynamic=true&results=1&type=column"></iframe>
+            <div class="carte">
+                <h3>Humidité (%)</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/widgets/TON_WIDGET_ID"></iframe>
             </div>
-            <div class="panel">
-                <h3>Pression</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/3?bgcolor=%23000000&color=%2300f3ff&dynamic=true&results=1&type=column"></iframe>
+            <div class="carte">
+                <h3>Pression (hPa)</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/widgets/TON_WIDGET_ID"></iframe>
             </div>
-            <div class="panel" style="grid-column: 1 / -1; border-color: var(--neon-violet);">
-                <h3>Prédiction Dominante IA</h3>
-                <p style="font-size: 1.2rem; color: #aaa;">Regarde les graphiques pour le détail des probabilités.</p>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/4?bgcolor=%23000000&color=%23bc13fe&dynamic=true&results=10&type=line"></iframe>
+        </div>
+
+        <h2 class="section-titre">Prédictions de l'IA</h2>
+        <div class="grille">
+            <div class="carte">
+                <h3>Probabilité : Pluie 🌧️</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/widgets/TON_WIDGET_ID"></iframe>
+            </div>
+            <div class="carte">
+                <h3>Probabilité : Beau temps ☀️</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/widgets/TON_WIDGET_ID"></iframe>
+            </div>
+            <div class="carte">
+                <h3>Probabilité : Nuageux ☁️</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/widgets/TON_WIDGET_ID"></iframe>
+            </div>
+            <div class="carte">
+                <h3>Probabilité : Brouillard 🌫️</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/widgets/TON_WIDGET_ID"></iframe>
+            </div>
+            <div class="carte">
+                <h3>Probabilité : Vent fort 💨</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/widgets/TON_WIDGET_ID"></iframe>
             </div>
         </div>
     </div>
 
     <div id="onglet-graphiques" class="contenu-onglet">
+        <h2 class="section-titre">Évolution dans le temps</h2>
         <div class="grille">
-            <div class="panel">
-                <h3>Historique Température</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/1?bgcolor=%23000000&color=%2300f3ff&dynamic=true&results=60&type=line&update=15"></iframe>
+            <div class="carte">
+                <h3>Courbe Température</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/charts/1?dynamic=true&results=60&type=line"></iframe>
             </div>
-            <div class="panel">
-                <h3>Historique Humidité</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/2?bgcolor=%23000000&color=%23bc13fe&dynamic=true&results=60&type=line&update=15"></iframe>
+            <div class="carte">
+                <h3>Courbe Humidité</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/charts/2?dynamic=true&results=60&type=line"></iframe>
             </div>
-            <div class="panel">
-                <h3>Prédiction : Beau Temps</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/5?bgcolor=%23000000&color=%2300f3ff&dynamic=true&results=60&type=line&update=15"></iframe>
-            </div>
-            <div class="panel">
-                <h3>Prédiction : Nuageux</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/6?bgcolor=%23000000&color=%23bc13fe&dynamic=true&results=60&type=line&update=15"></iframe>
-            </div>
-            <div class="panel">
-                <h3>Probabilité : Brouillard</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/7?dynamic=true&results=60&type=line&update=15"></iframe>
-            </div>
-            <div class="panel">
-                <h3>Probabilité : Vent fort</h3>
-                <iframe src="https://thingspeak.com/channels/3339078/charts/8?dynamic=true&results=60&type=line&update=15"></iframe>
+            <div class="carte">
+                <h3>Courbe Pression</h3>
+                <iframe src="https://thingspeak.com/channels/3339078/charts/3?dynamic=true&results=60&type=line"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. GESTION DES ONGLETS
         function changerOnglet(idOnglet, boutonClique) {
-            // Cacher tous les contenus
-            document.querySelectorAll('.contenu-onglet').forEach(el => el.classList.remove('actif'));
-            // Désactiver tous les boutons
-            document.querySelectorAll('.btn-onglet').forEach(el => el.classList.remove('actif'));
+            // 1. Cacher tous les onglets
+            document.querySelectorAll('.contenu-onglet').forEach(onglet => {
+                onglet.classList.remove('actif');
+            });
             
-            // Activer le bon onglet et le bouton cliqué
+            // 2. Désélectionner tous les boutons
+            document.querySelectorAll('.btn-onglet').forEach(btn => {
+                btn.classList.remove('actif');
+            });
+            
+            // 3. Afficher le bon onglet et allumer le bouton cliqué
             document.getElementById(idOnglet).classList.add('actif');
             boutonClique.classList.add('actif');
         }
-
-        // 2. FOND DYNAMIQUE SELON L'HEURE DE L'ORDINATEUR
-        function actualiserFond() {
-            const heure = new Date().getHours();
-            const body = document.getElementById('body-fond');
-            
-            // Retirer les anciennes classes
-            body.classList.remove('fond-jour', 'fond-crepuscule', 'fond-nuit');
-
-            // Appliquer la bonne ambiance
-            if (heure >= 7 && heure < 18) {
-                body.classList.add('fond-jour'); // Bleu profond
-            } else if (heure >= 18 && heure < 21) {
-                body.classList.add('fond-crepuscule'); // Violet / Rouge
-            } else {
-                body.classList.add('fond-nuit'); // Noir / Bleu très sombre
-            }
-        }
-
-        // Lancer au chargement de la page
-        actualiserFond();
-        // Vérifier toutes les minutes si l'heure a changé
-        setInterval(actualiserFond, 60000);
     </script>
 </body>
 </html>
